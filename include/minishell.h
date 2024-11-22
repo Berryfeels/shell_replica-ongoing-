@@ -94,6 +94,14 @@ typedef struct s_token
 	char token;
 } t_token;
 
+//me11
+
+typedef struct bld_in {
+	char	*name;
+	void	(*func)(char **ac);
+	struct bld_in *next;
+} bld_in;
+
 //funtions
 int	execute(char *cmd, char **envp);
 void ft_pwd ();
