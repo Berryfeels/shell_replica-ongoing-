@@ -33,6 +33,7 @@
 # define EXIT_ERROR 1
 # define EXIT_SUCCESS 0
 # define PATH_MAX 4096
+# define MAX_TOKENS 128
 
 /******************************************************************************
 *								TOKENS										  *

@@ -27,3 +27,17 @@ bld_in  *find_buidtin(bld_in *head, const char *command)
     }
     return (NULL);
 }
+
+int is_bltin(char *command)
+{
+    const char  *bltins[] = {"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
+    int         i;
+
+    i = 0;
+    while (bltins[i])
+    {
+        if (ft_strcmp (command, bltins[i]) == 0)
+            return (1);
+    }
+    return (0);
+}
