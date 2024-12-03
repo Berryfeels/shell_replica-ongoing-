@@ -34,6 +34,7 @@
 # define EXIT_SUCCESS 0
 # define PATH_MAX 4096
 # define MAX_TOKENS 128
+# define MAX_BUFFER 1024
 
 /******************************************************************************
 *								TOKENS										  *
@@ -102,6 +103,15 @@ typedef struct bld_in {
 	void	(*func)(char **ac);
 	struct bld_in *next;
 } bld_in;
+
+typedef struct	s_tokenizer {
+	char	token_buffer[MAX_BUFFER];
+	int		buf_idx;
+	int		i;
+	int		in_singles;
+	int		in_doubes;
+} t_tokenizer;
+
 
 //funtions
 int	execute(char *cmd, char **envp);
