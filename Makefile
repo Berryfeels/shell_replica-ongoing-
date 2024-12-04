@@ -1,16 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: stdi-pum <stdi-pum@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/09/29 15:56:04 by stdi-pum          #+#    #+#              #
-#    Updated: 2024/10/04 15:56:39 by stdi-pum         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
-
 NAME  = minishell
 
 # Compiler
@@ -41,20 +28,19 @@ INC         =   -I ./include/ \
 # Source directories
 SRC_PATH    = src/
 
-# search for .c files in subfolders
-SRC = $(find $(SRC_PATH) -type f -name "*.c")
+# Find all .c files recursively in SRC_PATH
+SRC = $(shell find $(SRC_PATH) -type f -name "*.c")
 
 # Object directories
-OBJ_PATH = src/obj
+OBJ_PATH = src/obj/
 
-# sets the folders for .o files mimiking the src path
+# Map .c files to corresponding .o files in OBJ_PATH
 OBJS = $(patsubst $(SRC_PATH)%.c, $(OBJ_PATH)%.o, $(SRC))
-
 
 # Rule to create object directories
 $(OBJ_PATH):
 	@echo "Creating object directories..."
-	@mkdir -p	$(OBJ_PATH)
+	@mkdir -p $(OBJ_PATH)
 
 # Rules
 all: $(LIBFT) $(PRINTF) $(DPRINTF) $(NAME)
@@ -63,8 +49,7 @@ all: $(LIBFT) $(PRINTF) $(DPRINTF) $(NAME)
 $(OBJ_PATH)%.o: $(SRC_PATH)%.c | $(OBJ_PATH)
 	@mkdir -p $(dir $@)
 	@echo "Compiling $< -> $@"
-	@$(CC) $(CFLAGS) -c $< -o $@ $(INC)
-
+	$(CC) $(CFLAGS) -c $< -o $@ $(INC)
 
 # Build libft
 $(LIBFT):
@@ -83,9 +68,8 @@ $(DPRINTF):
 
 # Build executable
 $(NAME): $(OBJS)
-	@echo "Compiling $(NAME)..."
-	@echo "What is your order, Master?"
-	$(info $(CC) $(CFLAGS) -o $(NAME) $(OBJS) -L$(LIBFT_PATH) -lft -L$(PRINTF_PATH) -lprintf -L$(DPRINTF_PATH) -ldprintf -lreadline)
+	@echo "Linking $(NAME)..."
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -L$(LIBFT_PATH) -lft -L$(PRINTF_PATH) -lprintf -L$(DPRINTF_PATH) -ldprintf -lreadline
 
 # Clean object files
 clean:
@@ -94,6 +78,7 @@ clean:
 	@make clean -C $(LIBFT_PATH)
 	@make clean -C $(PRINTF_PATH)
 	@make clean -C $(DPRINTF_PATH)
+
 # Clean everything including executables
 fclean: clean
 	@echo "Removing executables and libraries..."
@@ -107,4 +92,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all re clean fcleanc
-
