@@ -46,27 +46,41 @@ void    handle_unset(char **av)
     if (unsetenv(av[1]) != 0)
         perror ("unset");
 }
-
+/*
 void    handle_env(char **av)
 {
 
 }
-
-void    shell_loop(void)
+*/
+void    shell_loop(bld_in *biltins)
 {
     char    *line;
     char    **tokens;
+    bld_in  *builtin;
 
     while (1)
     {
         line = read_input();
         if (!line)
             break ;
-        if (tokens)
-        {
-            execute_command (tokens);
-            free_token (tokens);
-        }
+        tokens = tokenize_input(line);
         free (line);
+        if (!tokens || !tokens[0])
+        {
+            free_tokens (tokens);
+            continue ;
+        }
+        builtin = find_builtin(builtins, tokens[0]);
+        if (builtin)
+            builtin->func(tokens);
+        else
+        {
+            if (fork() == 0)
+                perror ("minishell");
+            exit (EXIT_FAILURE);
+            else
+                wait (NULL);
+        }
+        free_tokens (tokens);
     }
 }

@@ -15,7 +15,7 @@ NAME  = minishell
 
 # Compiler
 CC      = cc
-CFLAGS  = -g -Werror -Wextra -Wall
+CFLAGS  = -g -Werror -Wextra -Wall -fsanitize=address
 
 # Libft
 LIBFT_PATH  = libft/
@@ -42,7 +42,7 @@ INC         =   -I ./include/ \
 SRC_PATH    = src/
 
 # search for .c files in subfolders
-SRC = $(shell find $(SRC_PATH) -type f -name "*.c")
+SRC = $(find $(SRC_PATH) -type f -name "*.c")
 
 # Object directories
 OBJ_PATH = src/obj
@@ -56,17 +56,13 @@ $(OBJ_PATH):
 	@echo "Creating object directories..."
 	@mkdir -p	$(OBJ_PATH)
 
-# Object files
-OBJS = $(patsubst $(SRC_PATH)%.c, $(OBJ_PATH)%.o, $(SRC))
-
-
 # Rules
 all: $(LIBFT) $(PRINTF) $(DPRINTF) $(NAME)
 
 # Create .o files
 $(OBJ_PATH)%.o: $(SRC_PATH)%.c | $(OBJ_PATH)
 	@mkdir -p $(dir $@)
-	@echo "Compiling $< to $@"
+	@echo "Compiling $< -> $@"
 	@$(CC) $(CFLAGS) -c $< -o $@ $(INC)
 
 
@@ -89,7 +85,7 @@ $(DPRINTF):
 $(NAME): $(OBJS)
 	@echo "Compiling $(NAME)..."
 	@echo "What is your order, Master?"
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -L$(LIBFT_PATH) -lft -L$(PRINTF_PATH) -lprintf -L$(DPRINTF_PATH) -ldprintf -lreadline
+	$(info $(CC) $(CFLAGS) -o $(NAME) $(OBJS) -L$(LIBFT_PATH) -lft -L$(PRINTF_PATH) -lprintf -L$(DPRINTF_PATH) -ldprintf -lreadline)
 
 # Clean object files
 clean:

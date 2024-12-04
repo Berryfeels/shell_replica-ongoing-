@@ -114,8 +114,11 @@ typedef struct	s_tokenizer {
 
 
 //funtions
-int	execute(char *cmd, char **envp);
-void ft_pwd ();
-void ft_cd(char *buff, char *prompt);
+void shell_loop(bld_in *builtins);
+char *read_input(void);
+char **tokenize_input(char *line);
+bld_in *create_builtin_list(void);
+bld_in *find_builtin(bld_in *head, const char *command);
+void    handle_cd(char **av);
 
 #endif

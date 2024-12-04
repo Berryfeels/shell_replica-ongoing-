@@ -27,10 +27,8 @@ void ft_openErrorScan(void)
 int	main()
 {	
 	int	fd;
-	char *prompt;
-	char *buff;
+	bld_in	*builtins;
 
-	buff = NULL;
 	while ((fd = open("console", O_RDWR)) >= 0)
 	{
 		if (fd >= 3)
@@ -39,27 +37,11 @@ int	main()
 			break;
 		}
 	}
-	while (1)
-	{	
-		prompt = readline("Mestepum> ");
-		if (prompt)
-		{
-			if(*prompt)
-			{
-				add_history(prompt);
-				if (prompt[0] == 'c' && prompt[1] == 'd' && prompt[2] == ' ')
-					ft_cd(buff, prompt);
-				if (prompt[0] == 'p' && prompt[1] == 'w' && prompt[2] == 'd')
-					ft_pwd();
-				if (strncmp(prompt, "exit", 4) == 0)//place holder
-					return 0;
-				free (prompt);
-			}
-		}
-		else 
-			break;
-		
-	}
+	builtins = create_builtin_list();
+	shell_loop (builtins);
+
+	free_builtin_list(builtins);
+
 	close (fd);
 	return 0;
 }

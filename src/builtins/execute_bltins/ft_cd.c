@@ -6,7 +6,7 @@ void    update_env(const char *key, const char *value)
         setenv(key, value, 1);
 }
 
-void    handle_cd(char *av)
+void    handle_cd(char **av)
 {
     char    cwd[1024];
     char    *home;
