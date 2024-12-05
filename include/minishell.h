@@ -17,13 +17,13 @@
 # include <readline/history.h>
 # include <fcntl.h>
 # include <unistd.h>
-# include "../dprintf/ft_dprintf.h"
+# include "../lib/dprintf/ft_dprintf.h"
 # include <stdlib.h>
 # include <stdio.h>
 # include <sys/wait.h>
 # include <string.h>
-# include "../libft/libft.h"
-# include "../printf/ft_printf.h"
+# include "../lib/libft/libft.h"
+# include "../lib/printf/ft_printf.h"
 
 
 /******************************************************************************
@@ -120,5 +120,6 @@ char **tokenize_input(char *line);
 bld_in *create_builtin_list(void);
 bld_in *find_builtin(bld_in *head, const char *command);
 void    handle_cd(char **av);
+void    free_builtin_list(bld_in *head);
 
 #endif

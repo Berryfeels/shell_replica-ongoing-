@@ -1,94 +1,69 @@
-NAME  = minishell
+# Makefile for the shell project
 
-# Compiler
-CC      = cc
-CFLAGS  = -g -Werror -Wextra -Wall -fsanitize=address
+# Compiler and flags
+CC := cc
+CFLAGS := -Wall -Wextra -Werror -g -fsanitize=address
+INCLUDE := -Iinclude -Ilib/libft -Ilib/printf -Ilib/dprintf
 
-# Libft
-LIBFT_PATH  = libft/
-LIBFT_NAME  = libft.a
-LIBFT       = $(LIBFT_PATH)$(LIBFT_NAME)
+# Directories
+SRC_DIR := src
+OBJ_DIR := obj
+LIB_DIR := lib
+LIBFT_DIR := $(LIB_DIR)/libft
+PRINTF_DIR := $(LIB_DIR)/printf
+DPRINTF_DIR := $(LIB_DIR)/dprintf
 
-# printf
-PRINTF_PATH = printf/
-PRINTF_NAME = libprintf.a
-PRINTF      = $(PRINTF_PATH)$(PRINTF_NAME)
+LIBFT_OBJ_DIR := $(LIBFT_DIR)/obj
+PRINTF_OBJ_DIR := $(PRINTF_DIR)/obj
+DPRINTF_OBJ_DIR := $(LIB_DIR)/dprintf
 
-# dprintf
-DPRINTF_PATH = dprintf/
-DPRINTF_NAME = libdprintf.a
-DPRINTF      = $(DPRINTF_PATH)$(DPRINTF_NAME)
+# Libraries
+LIBFT := $(LIBFT_DIR)/libft.a
+PRINTF := $(PRINTF_DIR)/libftprintf.a
+DPRINTF := $(DPRINTF_DIR)/libftdprintf.a
 
-# Includes
-INC         =   -I ./include/ \
-				-I $(LIBFT_PATH) \
-				-I $(PRINTF_PATH) \
-				-I $(DPRINTF_PATH) \
+# Executable name
+NAME := minishellO
 
-# Source directories
-SRC_PATH    = src/
-
-# Find all .c files recursively in SRC_PATH
-SRC = $(shell find $(SRC_PATH) -type f -name "*.c")
-
-# Object directories
-OBJ_PATH = src/obj/
-
-# Map .c files to corresponding .o files in OBJ_PATH
-OBJS = $(patsubst $(SRC_PATH)%.c, $(OBJ_PATH)%.o, $(SRC))
-
-# Rule to create object directories
-$(OBJ_PATH):
-	@echo "Creating object directories..."
-	@mkdir -p $(OBJ_PATH)
+# Source files and object files
+SRC := $(shell find $(SRC_DIR) -type f -name "*.c")
+OBJ := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 # Rules
-all: $(LIBFT) $(PRINTF) $(DPRINTF) $(NAME)
+all: $(NAME)
 
-# Create .o files
-$(OBJ_PATH)%.o: $(SRC_PATH)%.c | $(OBJ_PATH)
+$(NAME): $(LIBFT) $(PRINTF) $(DPRINTF) $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(PRINTF) $(DPRINTF)-o $(NAME)
+
+# Compile object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
-	@echo "Compiling $< -> $@"
-	$(CC) $(CFLAGS) -c $< -o $@ $(INC)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Build libft
 $(LIBFT):
-	@echo "Building libft..."
-	@make -C $(LIBFT_PATH)
+	$(MAKE) OBJ_DIR=$(LIBFT_OBJ_DIR) -C $(LIBFT_DIR)
 
 # Build printf
 $(PRINTF):
-	@echo "Building printf..."
-	@make -C $(PRINTF_PATH)
+	$(MAKE) OBJ_DIR=$(PRINTF_OBJ_DIR) -C $(PRINTF_DIR)
 
-# Build dprintf
 $(DPRINTF):
-	@echo "Building dprintf..."
-	@make -C $(DPRINTF_PATH)
+	$(MAKE) OBJ_DIR=$(DPRINTF_OBJ_DIR) -C $(DPRINTF_DIR)
 
-# Build executable
-$(NAME): $(OBJS)
-	@echo "Linking $(NAME)..."
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -L$(LIBFT_PATH) -lft -L$(PRINTF_PATH) -lprintf -L$(DPRINTF_PATH) -ldprintf -lreadline
-
-# Clean object files
+# Clean rules
 clean:
-	@echo "Removing .o object files..."
-	$(RM)  $(OBJS)
-	@make clean -C $(LIBFT_PATH)
-	@make clean -C $(PRINTF_PATH)
-	@make clean -C $(DPRINTF_PATH)
+	$(MAKE) clean OBJ_DIR=$(LIBFT_OBJ_DIR) -C $(LIBFT_DIR)
+	$(MAKE) clean OBJ_DIR=$(PRINTF_OBJ_DIR) -C $(PRINTF_DIR)
+	$(MAKE) clean OBJ_DIR=$(DPRINTF_OBJ_DIR) -C $(DPRINTF_DIR)
+	rm -rf $(OBJ_DIR)
 
-# Clean everything including executables
 fclean: clean
-	@echo "Removing executables and libraries..."
-	$(RM) $(NAME)
-	$(RM) $(LIBFT)
-	$(RM) $(PRINTF)
-	$(RM) $(DPRINTF)
-	@rm -rf $(OBJ_PATH)
+	$(MAKE) fclean OBJ_DIR=$(LIBFT_OBJ_DIR) -C $(LIBFT_DIR)
+	$(MAKE) fclean OBJ_DIR=$(PRINTF_OBJ_DIR) -C $(PRINTF_DIR)
+	$(MAKE) fclean OBJ_DIR=$(DPRINTF_OBJ_DIR) -C $(DPRINTF_DIR)
+	rm -f $(NAME)
 
-# Rebuild everything
 re: fclean all
 
-.PHONY: all re clean fcleanc
+.PHONY: all clean fclean re
