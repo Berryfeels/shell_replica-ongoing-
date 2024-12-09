@@ -100,7 +100,7 @@ typedef struct s_token
 
 typedef struct bld_in {
 	char	*name;
-	void	(*func)(char **ac);
+	int		(*func)(char **ac);
 	struct bld_in *next;
 } bld_in;
 
@@ -119,7 +119,12 @@ char *read_input(void);
 char **tokenize_input(char *line);
 bld_in *create_builtin_list(void);
 bld_in *find_builtin(bld_in *head, const char *command);
-void    handle_cd(char **av);
+int    handle_cd(char **av);
+int    handle_echo(char **av);
+void    handle_pwd(void);
+void    handle_export(char **av);
+void    handle_unset(char **av);
+
 void    free_builtin_list(bld_in *head);
 
 #endif

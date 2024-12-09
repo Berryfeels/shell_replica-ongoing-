@@ -1,4 +1,4 @@
-#include "minishell.c"
+#include "../../include/minishell.c"
 
 void    update_env(const char *key, const char *value)
 {
@@ -6,7 +6,7 @@ void    update_env(const char *key, const char *value)
         setenv(key, value, 1);
 }
 
-void    handle_cd(char **av)
+int    handle_cd(char **av)
 {
     char    cwd[1024];
     char    *home;
@@ -41,4 +41,5 @@ void    handle_cd(char **av)
     }
     if (getcwd (cwd, sizeof(cwd)))
         update_env ("PWD", cwd);
+    return (EXIT_SUCCESS);
 }
