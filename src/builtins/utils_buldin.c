@@ -1,4 +1,4 @@
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 int execute_command(char **av, bld_in *builtins)
 {
@@ -36,7 +36,7 @@ int is_bltin(char *command)
     i = 0;
     while (bltins[i])
     {
-        if (ft_strcmp (command, bltins[i]) == 0)
+        if (strcmp (command, bltins[i]) == 0)
             return (1);
     }
     return (0);

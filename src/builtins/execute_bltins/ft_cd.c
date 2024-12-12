@@ -1,4 +1,4 @@
-#include "../../include/minishell.c"
+#include "../../../include/minishell.h"
 
 void    update_env(const char *key, const char *value)
 {
@@ -18,7 +18,7 @@ int    handle_cd(char **av)
         if (!home)
         {
             fprintf (stderr, "cd: HOME not set\n");
-            return ;
+            return (EXIT_FAILURE);
         }
         if (chdir (home) == 0)
             update_env ("OLDPWD", cwd);
@@ -29,7 +29,7 @@ int    handle_cd(char **av)
         if (!oldpwd)
         {
             fprintf (stderr, "cd: OLDPWD not set\n");
-            return ;
+            return (EXIT_FAILURE);
         }
     }
     else

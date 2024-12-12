@@ -1,6 +1,6 @@
-#include "../../include/minishel.h"
+#include "../../../include/minishell.h"
 /*
-int ft_env(char **av)
+int handle_env(char **av)
 {
     
 }

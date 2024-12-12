@@ -109,7 +109,7 @@ typedef struct	s_tokenizer {
 	int		buf_idx;
 	int		i;
 	int		in_singles;
-	int		in_doubes;
+	int		in_doubles;
 } t_tokenizer;
 
 
@@ -121,10 +121,10 @@ bld_in *create_builtin_list(void);
 bld_in *find_builtin(bld_in *head, const char *command);
 int    handle_cd(char **av);
 int    handle_echo(char **av);
-void    handle_pwd(void);
-void    handle_export(char **av);
-void    handle_unset(char **av);
-
+//int    handle_pwd(void);
+int    handle_export(char **av);
+int    handle_unset(char **av);
+void    init_state(t_tokenizer *state);
 void    free_builtin_list(bld_in *head);
 
 #endif

@@ -1,53 +1,4 @@
-#include "../include/minishell.h"
-
-char    *read_input(void)
-{
-    char    *line;
-
-    line = readline ("Mestepum> ");
-    if (line && *line)
-    {
-        add_history (line);
-        return (line);
-    }
-    free (line);
-    return (NULL);
-}
-
-char    **tokenize_input(char *line)
-{
-    char            **tokens;
-    int             j;
-    t_tokenizier    state;
-    char            c;
-
-    tokens = malloc(sizeof(char *)  * MAX_TOKENS);
-    if (!tokens)
-    {
-        perror("malloc failed");
-        return NULL;
-    }
-    j = 0;
-    init_state (&state);
-    while (line[j] != '\0')
-    {
-        c = line[j];
-        handle_quotes(c, &state);
-        if (!state.in_singles && !state.in_doubles && (c == '|' || c == '<' || c == '>'))
-        {
-            handle_whitespace (tokens, &state);
-            if (handle_special_chars (c, line[j + 1], tokens, &state))
-                j++;
-        }
-        else if (isspace (c) && !state.in_sigles && !state.indoubles)
-            handle_whitespace (tokens, &state);
-        else
-            state.token_buffer[state.buf_idx++] = c;
-    }
-    handle_whitespace (tokens, &state);
-    tokens[state.i] = NULL;
-    return (tokens);
-}
+#include "../../include/minishell.h"
 
 void    handle_quotes(char c, t_tokenizer *state)
 {
@@ -99,5 +50,54 @@ void    free_tokens(char **tokens)
         i++;
     }
     free (tokens);
+}
+
+char    *read_input(void)
+{
+    char    *line;
+
+    line = readline ("Mestepum> ");
+    if (line && *line)
+    {
+        add_history (line);
+        return (line);
+    }
+    free (line);
+    return (NULL);
+}
+
+char    **tokenize_input(char *line)
+{
+    char            **tokens;
+    int             j;
+    t_tokenizer    state;
+    char            c;
+
+    tokens = malloc(sizeof(char *)  * MAX_TOKENS);
+    if (!tokens)
+    {
+        perror("malloc failed");
+        return NULL;
+    }
+    j = 0;
+    init_state (&state);
+    while (line[j] != '\0')
+    {
+        c = line[j];
+        handle_quotes(c, &state);
+        if (!state.in_singles && !state.in_doubles && (c == '|' || c == '<' || c == '>'))
+        {
+            handle_whitespace (tokens, &state);
+            if (handle_special_chars (c, line[j + 1], tokens, &state))
+                j++;
+        }
+        else if (isspace (c) && !state.in_sigles && !state.indoubles)
+            handle_whitespace (tokens, &state);
+        else
+            state.token_buffer[state.buf_idx++] = c;
+    }
+    handle_whitespace (tokens, &state);
+    tokens[state.i] = NULL;
+    return (tokens);
 }
 

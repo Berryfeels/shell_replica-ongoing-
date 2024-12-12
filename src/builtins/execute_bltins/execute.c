@@ -1,5 +1,5 @@
-#include "../../include/minishell.h"
-
+#include "../../../include/minishell.h"
+/*
 int    handle_pwd(void)
 {
     char    cwd[1024];
@@ -15,7 +15,7 @@ int    handle_pwd(void)
         return (EXIT_FAILURE);
     }
 }
-
+*/
 int    handle_export(char **av)
 {
     if (!av[1])
@@ -46,11 +46,23 @@ int    handle_unset(char **av)
     return (EXIT_SUCCESS);
 }
 
-void    shell_loop(bld_in *biltins)
+void    free_tokens(char **tokens)
+{
+    int i;
+
+    i = 0;
+    while (tokens[i] != NULL)
+    {
+        free (tokens[i]);
+        i++;
+    }
+    free(tokens);
+}
+
+void    shell_loop(bld_in *builtin)
 {
     char    *line;
     char    **tokens;
-    bld_in  *builtin;
 
     while (1)
     {
@@ -64,14 +76,16 @@ void    shell_loop(bld_in *biltins)
             free_tokens (tokens);
             continue ;
         }
-        builtin = find_builtin(builtins, tokens[0]);
+        builtin = find_builtin(builtin, tokens[0]);
         if (builtin)
             builtin->func(tokens);
         else
         {
             if (fork() == 0)
+            {
                 perror ("minishell");
-            exit (EXIT_FAILURE);
+                exit (EXIT_FAILURE);
+            }
             else
                 wait (NULL);
         }
