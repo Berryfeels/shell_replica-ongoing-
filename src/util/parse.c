@@ -91,7 +91,7 @@ char    **tokenize_input(char *line)
             if (handle_special_chars (c, line[j + 1], tokens, &state))
                 j++;
         }
-        else if (isspace (c) && !state.in_sigles && !state.indoubles)
+        else if (isspace (c) && !state.in_singles && !state.in_doubles)
             handle_whitespace (tokens, &state);
         else
             state.token_buffer[state.buf_idx++] = c;
