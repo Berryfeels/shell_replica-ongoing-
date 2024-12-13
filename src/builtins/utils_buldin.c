@@ -17,7 +17,7 @@ int execute_command(char **av, bld_in *builtins)
     return (0);
 }
 
-bld_in  *find_buidtin(bld_in *head, const char *command)
+bld_in  *find_buitin(bld_in *head, const char *command)
 {
     while (head != NULL)
     {

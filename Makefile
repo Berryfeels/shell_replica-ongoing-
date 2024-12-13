@@ -39,7 +39,7 @@ $(NAME): $(LIBFT) $(PRINTF) $(DPRINTF) $(OBJ)
 	@if [ ! -f $(DPRINTF) ]; then \
 		echo "Error: libftdprintf.a not found in $(DPRINTF_DIR)"; exit 1; \
 	fi
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(PRINTF) $(DPRINTF) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(PRINTF) $(DPRINTF) -lreadline -o $(NAME)
 
 # Compile object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c

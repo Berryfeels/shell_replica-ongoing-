@@ -118,7 +118,7 @@ void shell_loop(bld_in *builtins);
 char *read_input(void);
 char **tokenize_input(char *line);
 bld_in *create_builtin_list(void);
-bld_in  *find_buidtin(bld_in *head, const char *command);
+bld_in  *find_builtin(bld_in *head, const char *command);
 int    handle_cd(char **av);
 int    handle_echo(char **av);
 //int    handle_pwd(void);
