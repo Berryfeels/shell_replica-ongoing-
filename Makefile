@@ -19,8 +19,8 @@ DPRINTF_OBJ_DIR := $(LIB_DIR)/dprintf
 
 # Libraries
 LIBFT := $(LIBFT_DIR)/libft.a
-PRINTF := $(PRINTF_DIR)/libftprintf.a
-DPRINTF := $(DPRINTF_DIR)/libftdprintf.a
+PRINTF := $(PRINTF_DIR)/libprintf.a
+DPRINTF := $(DPRINTF_DIR)/libdprintf.a
 
 # Executable name
 NAME := minishellO
@@ -33,7 +33,13 @@ OBJ := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(PRINTF) $(DPRINTF) $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(PRINTF) $(DPRINTF)-o $(NAME)
+	@if [ ! -f $(PRINTF) ]; then \
+		echo "Error: libftprintf.a not found in $(PRINTF_DIR)"; exit 1; \
+	fi
+	@if [ ! -f $(DPRINTF) ]; then \
+		echo "Error: libftdprintf.a not found in $(DPRINTF_DIR)"; exit 1; \
+	fi
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(PRINTF) $(DPRINTF) -o $(NAME)
 
 # Compile object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
@@ -46,9 +52,11 @@ $(LIBFT):
 
 # Build printf
 $(PRINTF):
+	@echo "Building libprintf.a in $(PRINTF_DIR)"
 	$(MAKE) OBJ_DIR=$(PRINTF_OBJ_DIR) -C $(PRINTF_DIR)
 
 $(DPRINTF):
+	@echo "Building libdprintf.a in $(DPRINTF_DIR)"
 	$(MAKE) OBJ_DIR=$(DPRINTF_OBJ_DIR) -C $(DPRINTF_DIR)
 
 # Clean rules

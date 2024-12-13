@@ -46,19 +46,6 @@ int    handle_unset(char **av)
     return (EXIT_SUCCESS);
 }
 
-void    free_tokens(char **tokens)
-{
-    int i;
-
-    i = 0;
-    while (tokens[i] != NULL)
-    {
-        free (tokens[i]);
-        i++;
-    }
-    free(tokens);
-}
-
 void    shell_loop(bld_in *builtin)
 {
     char    *line;
