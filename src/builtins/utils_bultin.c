@@ -17,7 +17,7 @@ int execute_command(char **av, bld_in *builtins)
     return (0);
 }
 
-bld_in  *find_buitin(bld_in *head, const char *command)
+bld_in  *find_builtin(bld_in *head, const char *command)
 {
     while (head != NULL)
     {
@@ -28,7 +28,7 @@ bld_in  *find_buitin(bld_in *head, const char *command)
     return (NULL);
 }
 
-int is_bltin(char *command)
+int is_builtin(char *command)
 {
     const char  *bltins[] = {"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
     int         i;
