@@ -9,10 +9,10 @@ int execute_command(char **av, bld_in *builtins)
     builtin = find_builtin(builtins, av[0]);
     if (builtin)
         builtin->func(av);
-    else
+    if (execvp(av[0], av) == -1)
     {
-        if (execvp(av[0], av) == -1)
-            perror("Mestepum> ");
+        fprintf (stderr, "Mestepum: command not found: %s\n", av[0]);
+        return (127);
     }
     return (0);
 }
@@ -26,18 +26,4 @@ bld_in  *find_builtin(bld_in *head, const char *command)
         head = head->next;
     }
     return (NULL);
-}
-
-int is_builtin(char *command)
-{
-    const char  *bltins[] = {"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
-    int         i;
-
-    i = 0;
-    while (bltins[i])
-    {
-        if (strcmp (command, bltins[i]) == 0)
-            return (1);
-    }
-    return (0);
 }

@@ -73,10 +73,15 @@ char    **tokenize_input(char *line)
     t_tokenizer    state;
     char            c;
 
-    tokens = malloc(sizeof(char *)  * MAX_TOKENS);
+    if (ft_strlen(line) >= MAX_BUFFER)
+    {
+        fprintf(stderr, "Error: Input too long\n");
+        return NULL;
+    }
+    tokens = ft_calloc(MAX_TOKENS, sizeof(char *));
     if (!tokens)
     {
-        perror("malloc failed");
+        perror("calloc failed\n");
         return NULL;
     }
     j = 0;
@@ -94,7 +99,17 @@ char    **tokenize_input(char *line)
         else if (isspace (c) && !state.in_singles && !state.in_doubles)
             handle_whitespace (tokens, &state);
         else
-            state.token_buffer[state.buf_idx++] = c;
+        {
+            if (state.buf_idx < MAX_BUFFER - 1) // Prevent buffer overflow
+                state.token_buffer[state.buf_idx++] = c;
+            else
+            {
+                fprintf(stderr, "Error: Buffer overflow in tokenize_input\n");
+                free(tokens);
+                return NULL;
+            }
+        }
+        j++;
     }
     handle_whitespace (tokens, &state);
     tokens[state.i] = NULL;
