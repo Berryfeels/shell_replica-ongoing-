@@ -40,7 +40,9 @@
 *								TOKENS										  *
 ******************************************************************************/
 //give a definition to the different tokens
-# define PIPE '|'
+//# define PIPE '|'
+# define WHITESPACE "\t\n\v\f\r "
+# define REDIRECTION "|<>"
 
 //DEFINE STRUCTURES
 
@@ -98,6 +100,36 @@ typedef struct s_token
 
 //me11
 
+typedef struct s_msh
+{
+	char	**env;
+	char	**env_export;
+	int		ret_exit;
+	int		switch_signal;
+	char	*user;
+}				t_msh;
+
+typedef enum e_type
+{
+	VOID,
+	PIPE,
+	STRING,
+	REDIR_L,
+	REDIR_R,
+	HERE_DOC_L,
+	APPEND,
+	STATE,
+}				t_type;
+
+typedef enum e_state
+{
+	TEXT,
+	S_QUOTE,
+	D_QUOTE,
+	KEEP_IT,
+	LOSE_IT,
+}				t_state;
+
 typedef struct bld_in {
 	char	*name;
 	int		(*func)(char **ac);
@@ -112,6 +144,7 @@ typedef struct	s_tokenizer {
 	int		in_doubles;
 } t_tokenizer;
 
+t_msh	g_msh;
 
 //funtions
 void shell_loop(bld_in *builtins);

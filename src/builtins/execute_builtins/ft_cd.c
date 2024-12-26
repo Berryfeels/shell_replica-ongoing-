@@ -1,9 +1,12 @@
 #include "../../../include/minishell.h"
 
-void    update_env(const char *key, const char *value)
+void    update_env(char *av, char *c)
 {
-    if (value)
-        setenv(key, value, 1);
+    char    *string;
+
+    string = ft_strjoin(av, c);
+    ms_set_env (g_msh.env, string);
+    free (string);
 }
 
 int    handle_cd(char **av)
