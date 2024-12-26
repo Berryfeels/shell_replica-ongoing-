@@ -160,5 +160,9 @@ int    handle_unset(char **av);
 void    init_state(t_tokenizer *state);
 void    free_builtin_list(bld_in *head);
 void    free_tokens(char **tokens);
+char    *ms_get_env(char **env, char *av);
+void    ms_set_env(char **env, char *value);
+char	**ms_matrix_add_line(char **matrix, char *new_line);
+void    init_env(char **env);
 
 #endif

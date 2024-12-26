@@ -24,11 +24,13 @@ void ft_openErrorScan(void)
 
 
 
-int	main()
+int	main(int ac, char **env)
 {	
+	(void)ac;
 	int	fd;
 	bld_in	*builtins;
 
+	init_env(env);
 	while ((fd = open("console", O_RDWR)) >= 0)
 	{
 		if (fd >= 3)

@@ -1,6 +1,6 @@
 #include "../../../include/minishell.h"
 
-void    update_env(char *av, char *c)
+void    set_pwd(char *av, char *c)
 {
     char    *string;
 
@@ -12,37 +12,30 @@ void    update_env(char *av, char *c)
 int    handle_cd(char **av)
 {
     char    cwd[1024];
-    char    *home;
-    char    *oldpwd;
+    char    *avs;
 
-    home = getenv("HOME");
-    if (!av[1])
+    avs = av[1];
+    if (avs == NULL)
     {
-        if (!home)
+        avs = ms_get_env (g_msh.env, "HOME") + 5;
+        if ((avs - 5) == NULL)
         {
-            fprintf (stderr, "cd: HOME not set\n");
-            return (EXIT_FAILURE);
-        }
-        if (chdir (home) == 0)
-            update_env ("OLDPWD", cwd);
-    }
-    else if (strcmp(av[1], "-") == 0)
-    {
-        oldpwd = getenv("OLDPWD");
-        if (!oldpwd)
-        {
-            fprintf (stderr, "cd: OLDPWD not set\n");
-            return (EXIT_FAILURE);
+            printf ("cd: HOME not set\n");
+            return (1);
         }
     }
-    else
+    getcwd(cwd, sizeof(cwd));
+    if (chdir(avs) == -1)
     {
-        if (chdir(av[1]) == 0)
-            update_env("OLDPWD", cwd);
-        else
-            perror ("cd");
+        if (avs[0] == '\0')
+            return (1);
+        ft_putstr_fd ("cd: ", 2);
+        ft_putstr_fd (avs, 2);
+        ft_putendl_fd (": no such file or dir", 2);
+        return (1);
     }
-    if (getcwd (cwd, sizeof(cwd)))
-        update_env ("PWD", cwd);
-    return (EXIT_SUCCESS);
+    set_pwd ("OLDPWD=", cwd);
+    getcwd(cwd, sizeof(cwd));
+    set_pwd("PWD=", cwd);
+    return (0);
 }
