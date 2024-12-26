@@ -33,30 +33,26 @@ int	ft_dprint_format(const char specifier, va_list ap, int *count)
 	return (*count);
 }
 
-int	ft_dprintf(const char *format, ...)
+int	ft_dprintf(int fd, const char *format, ...)
 {
 	va_list	ap;
 	int		count;
-	int fd;
 
 	count = 0;
 	va_start(ap, format);
 	if (!format)
 		return (-1);
-	fd = open("Errors.txt", O_RDWR | O_CREAT, 0777);
-	if (fd < 0)
-		return (-1);
-	dup2 (1, fd);
 	while (*format)
 	{
 		if (*format == '%')
-			ft_dprint_format(*++format, ap, &count);
+			ft_dprint_format(*++format, ap, &count, fd);
 		else if (*format == '\0')
 			return (-1);
 		else
-			ft_dprint_char(*format, &count);
+			ft_dprint_char(*format, &count, fd);
 		++format;
 	}
 	va_end(ap);
+	close(fd);
 	return (count);
 }
