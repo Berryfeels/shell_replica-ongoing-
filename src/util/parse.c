@@ -20,7 +20,7 @@ int handle_special_chars(char c, char next, char **tokens, t_tokenizer *state)
         tokens[state->i++] = ft_strdup(token_buffer);
         return (1);
     }
-    else if (c == '|' || c == '<' || c == '>')
+    else if (c == '$' | c == '|' || c == '<' || c == '>')
     {
         token_buffer[0] = c;
         token_buffer[1] = '\0';
@@ -90,7 +90,7 @@ char    **tokenize_input(char *line)
     {
         c = line[j];
         handle_quotes(c, &state);
-        if (!state.in_singles && !state.in_doubles && (c == '|' || c == '<' || c == '>'))
+        if (!state.in_singles && !state.in_doubles && (c == '$' | c == '|' || c == '<' || c == '>'))
         {
             handle_whitespace (tokens, &state);
             if (handle_special_chars (c, line[j + 1], tokens, &state))
