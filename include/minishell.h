@@ -22,6 +22,7 @@
 # include <stdio.h>
 # include <sys/wait.h>
 # include <string.h>
+# include <stdbool.h>
 # include "../lib/libft/libft.h"
 # include "../lib/printf/ft_printf.h"
 
@@ -144,19 +145,28 @@ typedef struct	s_tokenizer {
 	int		in_doubles;
 } t_tokenizer;
 
+typedef struct s_job {
+    pid_t	pid;        // Process ID of the job
+    int		status;       // Job status (running, stopped, etc.)
+    char	*command;    // The command being executed
+    struct	s_job *next; // Linked list for multiple jobs
+}		t_job;
+
 t_msh	g_msh;
 
 //funtions
-void shell_loop(bld_in *builtins);
-char *read_input(void);
-char **tokenize_input(char *line);
-bld_in *create_builtin_list(void);
-bld_in  *find_builtin(bld_in *head, const char *command);
-int    handle_cd(char **av);
-int    handle_echo(char **av);
-//int    handle_pwd(void);
-int    handle_export(char **av);
-int    handle_unset(char **av);
+void	shell_loop(bld_in *builtins);
+char	*read_input(void);
+char	**tokenize_input(char *line);
+bld_in	*create_builtin_list(void);
+bld_in 	*find_builtin(bld_in *head, const char *command);
+int		handle_cd(char **av);
+int		handle_echo(char **av);
+int		handle_env(char **av);
+int		handle_pwd(char **av);
+int		handle_export(char **av);
+int		handle_unset(char **av);
+int		handle_exit(char **av);
 void    init_state(t_tokenizer *state);
 void    free_builtin_list(bld_in *head);
 void    free_tokens(char **tokens);
@@ -164,5 +174,6 @@ char    *ms_get_env(char **env, char *av);
 void    ms_set_env(char **env, char *value);
 char	**ms_matrix_add_line(char **matrix, char *new_line);
 void    init_env(char **env);
+int		exec_external_cmd(char **tokens);
 
 #endif

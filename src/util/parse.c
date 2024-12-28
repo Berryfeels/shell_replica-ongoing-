@@ -113,6 +113,14 @@ char    **tokenize_input(char *line)
     }
     handle_whitespace (tokens, &state);
     tokens[state.i] = NULL;
+
+    int i = 0;
+    printf("Tokens:\n");
+    while (tokens[i] != NULL)
+    {
+        printf("Token %d: %s\n", i, tokens[i]);
+        i++;
+    }
+    
     return (tokens);
 }
-

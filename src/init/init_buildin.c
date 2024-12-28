@@ -29,11 +29,11 @@ bld_in  *create_builtin_list(void)
     head = NULL;
     add_builtin(&head, "echo", handle_echo);
     add_builtin (&head, "cd", handle_cd);
-//    add_builtin (&head, "pwd", handle_pwd);
-//    add_builtin (&head, "export", handle_export);
+    add_builtin (&head, "pwd", handle_pwd);
+    add_builtin (&head, "export", handle_export);
     add_builtin (&head, "unset", handle_unset);
-//    add_builtin (&head, "env", handle_env);
-//    add_builtin (&head, "exit", handle_exit);
+    add_builtin (&head, "env", handle_env);
+    add_builtin (&head, "exit", handle_exit);
 
     return (head);
 }
