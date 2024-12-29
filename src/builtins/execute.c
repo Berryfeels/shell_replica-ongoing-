@@ -24,10 +24,10 @@ void    shell_loop(bld_in *builtins)
         }
         bltin = find_builtin(builtins, tokens[0]);
         if (bltin)
-            status = bltin->func(tokens);
+            g_msh.ret_exit = bltin->func(tokens);
         else
         {
-            status = exec_external_cmd(tokens);
+            g_msh.ret_exit = exec_external_cmd(tokens);
         }
         free_tokens (tokens);
     }

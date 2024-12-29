@@ -141,8 +141,7 @@ typedef struct	s_tokenizer {
 	char	token_buffer[MAX_BUFFER];
 	int		buf_idx;
 	int		i;
-	int		in_singles;
-	int		in_doubles;
+	t_state	cur_state;
 } t_tokenizer;
 
 typedef struct s_job {

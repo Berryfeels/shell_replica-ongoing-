@@ -1,11 +1,30 @@
 #include "../../include/minishell.h"
 
-void    handle_quotes(char c, t_tokenizer *state)
+void handle_quotes(char c, t_tokenizer *state)
 {
-    if (c == '\'' && !state->in_doubles)
-        state->in_singles = !state->in_singles;
-    else if (c == '"' && !state->in_singles)
-        state->in_doubles = !state->in_doubles;
+    if (state->cur_state == TEXT)
+    {
+        if (c == '\'')
+            state->cur_state = S_QUOTE; // Enter single-quote mode
+        else if (c == '\"')
+            state->cur_state = D_QUOTE; // Enter double-quote mode
+        else
+            state->token_buffer[state->buf_idx++] = c; // Append non-quote chars
+    }
+    else if (state->cur_state == S_QUOTE)
+    {
+        if (c == '\'')
+            state->cur_state = TEXT; // Exit single-quote mode
+        else
+            state->token_buffer[state->buf_idx++] = c; // Append inside single quotes
+    }
+    else if (state->cur_state == D_QUOTE)
+    {
+        if (c == '\"')
+            state->cur_state = TEXT; // Exit double-quote mode
+        else
+            state->token_buffer[state->buf_idx++] = c; // Append inside double quotes
+    }
 }
 
 int handle_special_chars(char c, char next, char **tokens, t_tokenizer *state)
@@ -69,10 +88,11 @@ char    *read_input(void)
 char    **tokenize_input(char *line)
 {
     char            **tokens;
-    int             j;
-    t_tokenizer    state;
+    t_tokenizer     state;
     char            c;
+    int             token_idx;
 
+    token_idx = 0;
     if (ft_strlen(line) >= MAX_BUFFER)
     {
         fprintf(stderr, "Error: Input too long\n");
@@ -84,43 +104,38 @@ char    **tokenize_input(char *line)
         perror("calloc failed\n");
         return NULL;
     }
-    j = 0;
     init_state (&state);
-    while (line[j] != '\0')
+    while (line[state.i] != '\0')
     {
-        c = line[j];
-        handle_quotes(c, &state);
-        if (!state.in_singles && !state.in_doubles && (c == '|' || c == '<' || c == '>'))
+        c = line[state.i];
+        if (isspace(c) && state.cur_state == TEXT)
         {
-            handle_whitespace (tokens, &state);
-            if (handle_special_chars (c, line[j + 1], tokens, &state))
-                j++;
-        }
-        else if (isspace (c) && !state.in_singles && !state.in_doubles)
-            handle_whitespace (tokens, &state);
-        else
-        {
-            if (state.buf_idx < MAX_BUFFER - 1) // Prevent buffer overflow
-                state.token_buffer[state.buf_idx++] = c;
-            else
+            if (state.buf_idx > 0) // Finish current token
             {
-                fprintf(stderr, "Error: Buffer overflow in tokenize_input\n");
-                free(tokens);
-                return NULL;
+                state.token_buffer[state.buf_idx] = '\0'; // Null-terminate
+                tokens[token_idx++] = strdup(state.token_buffer); // Save token
+                state.buf_idx = 0; // Reset buffer
             }
         }
-        j++;
+        else
+        {
+            handle_quotes(c, &state);
+        }
+        state.i++;
     }
-    handle_whitespace (tokens, &state);
+    if (state.buf_idx > 0)
+    {
+        state.token_buffer[state.buf_idx] = '\0';
+        tokens[token_idx++] = strdup(state.token_buffer);
+    }
     tokens[state.i] = NULL;
 
-    int i = 0;
-    printf("Tokens:\n");
-    while (tokens[i] != NULL)
+    int j = 0;
+    while (tokens[j] != NULL)
     {
-        printf("Token %d: %s\n", i, tokens[i]);
-        i++;
-    }
-    
+        printf("Token %d: %s\n", j, tokens[j]);
+        j++;
+    } 
+
     return (tokens);
 }

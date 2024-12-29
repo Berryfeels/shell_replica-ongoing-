@@ -24,10 +24,13 @@ int    handle_echo(char **av)
     int i;
     int n;
 
-    i = 0;
+    i = 1;
 	n = false;
-	while (ft_newline(av[i++]))
+	while (ft_newline(av[i]))
+	{
 		n = true;
+		i++;
+	}
     while (av[i])
     {
         printf ("%s", av[i]);
