@@ -72,13 +72,11 @@ void    ms_set_env(char **env, char *value)
     av = ft_split (value, '=');
     i = env_compare(env, av, i);
     if (env[i] == NULL)
-    {
         g_msh.env = ms_matrix_add_line(env, value);
-        ft_free_tab(av);
-        return ;
+    else
+    {
+        free (env[i]);
+        env[i] = ft_strdup (value);
     }
-    free (env[i]);
-    value = ft_strdup(value);
-    env[i] = value;
     ft_free_tab (av);
 }

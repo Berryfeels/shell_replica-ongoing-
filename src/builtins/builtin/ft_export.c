@@ -7,10 +7,11 @@ int    handle_export(char **av)
         fprintf(stderr, "export: missing argument\n");
         return (EXIT_FAILURE);
     }
-    if (putenv(av[1]) != 0)
+    if (!ft_strchr(av[1], '='))
     {
-        perror ("exposrt");
+        fprintf(stderr, "export: invalid format (expected key=value)\n");
         return (EXIT_FAILURE);
     }
+    ms_set_env(g_msh.env, av[1]);
     return (EXIT_SUCCESS);
 }

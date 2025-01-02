@@ -172,6 +172,7 @@ void    free_tokens(char **tokens);
 char    *ms_get_env(char **env, char *av);
 void    ms_set_env(char **env, char *value);
 char	**ms_matrix_add_line(char **matrix, char *new_line);
+char    *ms_get_varenv(char **env, char *av);
 void    init_env(char **env);
 int		exec_external_cmd(char **tokens);
 

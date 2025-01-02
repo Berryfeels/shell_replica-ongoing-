@@ -3,26 +3,35 @@
 void    check_shlvl(void)
 {
     char    *var;
-    char    *var1;
-    int     n;
-    char    **av;
+    char    *value;
+    int     shlvl;
+    char    *new_var;
 
     var = ms_get_env (g_msh.env, "SHLVL");
-    if (var == NULL)
+    if (!var)
     {
         g_msh.env = ms_matrix_add_line(g_msh.env, "SHLVL=1");
         return ;
     }
-    av = ft_split(var, '=');
-    n = ft_atoi (av[1]);
-    n++;
-    var = ft_itoa (n);
-    var1 = ft_strjoin ("SHLVL=", var);
-    ms_set_env (g_msh.env, var1);
-    free (var);
-    free (var1);
-    ft_free_tab (av);
-    return ;
+    value = ms_get_varenv (g_msh.env, "SHLVL");
+    if (!value || ft_isdigit(value[0]) == 0)
+    {
+        ft_printf("Warning: invalid SHLVL value. Resetting to 1\n");
+        free (value);
+        g_msh.env = ms_matrix_add_line (g_msh.env, "SHLVL=1");
+        return ;
+    }
+    shlvl = ft_atoi (value);
+    free (value);
+    if (shlvl < 0)
+        shlvl = 1;
+    else
+        shlvl++;
+    value = ft_itoa (shlvl);
+    new_var = ft_strjoin ("SHLVL=", value);
+    free (value);
+    ms_set_env (g_msh.env, new_var);
+    free (new_var);
 }
 
 void    init_env(char **env)
@@ -30,13 +39,25 @@ void    init_env(char **env)
     int i;
 
     i = 0;
+    if (!env)
+    {
+        fprintf(stderr, "Error: env is NULL\n");
+        exit(EXIT_FAILURE);
+    }
     while (env[i])
         i++;
     g_msh.env = malloc(sizeof(char *) * (i + 1));
-    i = -1;
-    while (env[++i])
+    if (!g_msh.env)
+    {
+        perror ("malloc failed\n");
+        exit (EXIT_FAILURE);
+    }
+    i = 0;
+    while (env[i])
+    {
         g_msh.env[i] = ft_strdup (env[i]);
+        i++;
+    }
     g_msh.env[i] = NULL;
     check_shlvl();
-    return ;
 }
