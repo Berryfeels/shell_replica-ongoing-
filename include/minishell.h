@@ -99,13 +99,10 @@ typedef struct s_redir
 
 //token struct
 
-typedef struct s_token
-{
-	char token;
-} t_token;
+
 
 //me11
-
+//general struc for the whole shell that is carring the necessary info
 typedef struct s_msh
 {
 	char	**env;
@@ -115,6 +112,7 @@ typedef struct s_msh
 	char	*user;
 }				t_msh;
 
+//e
 typedef enum e_type
 {
 	VOID,
@@ -135,6 +133,12 @@ typedef enum e_state
 	KEEP_IT,
 	LOSE_IT,
 }				t_state;
+
+typedef struct s_token
+{
+	char *value;
+	t_type	type;
+} t_token;
 
 typedef struct bld_in {
 	char	*name;
@@ -161,7 +165,7 @@ t_msh	g_msh;
 //funtions
 void	shell_loop(bld_in *builtins);
 char	*read_input(void);
-char	**tokenize_input(char *line);
+t_token    *tokenize_input(char *line);
 bld_in	*create_builtin_list(void);
 bld_in 	*find_builtin(bld_in *head, const char *command);
 int		handle_cd(char **av);

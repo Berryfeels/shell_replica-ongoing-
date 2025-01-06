@@ -27,23 +27,35 @@ void handle_quotes(char c, t_tokenizer *state)
     }
 }
 
-int handle_special_chars(char c, char next, char **tokens, t_tokenizer *state)
+int handle_special_chars(char c, char next, t_token *tokens, t_tokenizer *state)
 {
-    char token_buffer[3] = {0};
-
     if ((c == '<' && next == '<') || (c == '>' && next == '>'))
     {
-        token_buffer[0] = c;
-        token_buffer[1] = next;
-        token_buffer[2] = '\0';
-        tokens[state->i++] = ft_strdup(token_buffer);
+        tokens[state->i].value = strndup(&c, 2);
+        if (c == '<')
+            tokens[state->i].type = HERE_DOC_L;
+        else
+            tokens[state->i].type = APPEND;
+        state->i++;
         return (1);
     }
-    else if (c == '|' || c == '<' || c == '>')
+    else if (c == '|')
     {
-        token_buffer[0] = c;
-        token_buffer[1] = '\0';
-        tokens[state->i++] = ft_strdup(token_buffer);
+        tokens[state->i].value = ft_strdup("|");
+        tokens[state->i].type = PIPE;
+        state->i++;
+    }
+    else if (c == '<')
+    {
+        tokens[state->i].value = ft_strdup("<");
+        tokens[state->i].type = REDIR_L;
+        state->i++;
+    }
+    else if (c == '>')
+    {
+        tokens[state->i].value = ft_strdup(">");
+        tokens[state->i].type = REDIR_R;
+        state->i++;
     }
     return (0);
 }
@@ -85,14 +97,12 @@ char    *read_input(void)
     return (NULL);
 }
 
-char    **tokenize_input(char *line)
+t_token    *tokenize_input(char *line)
 {
-    char            **tokens;
+    t_token         *tokens;
     t_tokenizer     state;
     char            c;
-    int             token_idx;
 
-    token_idx = 0;
     if (ft_strlen(line) >= MAX_BUFFER)
     {
         fprintf(stderr, "Error: Input too long\n");
@@ -109,13 +119,12 @@ char    **tokenize_input(char *line)
     {
         c = line[state.i];
         if (isspace(c) && state.cur_state == TEXT)
+            handle_whitespace((char **)tokens, &state);
+        else if (state.cur_state == TEXT && (c == '|' || c == '<' || c == '>'))
         {
-            if (state.buf_idx > 0) // Finish current token
-            {
-                state.token_buffer[state.buf_idx] = '\0'; // Null-terminate
-                tokens[token_idx++] = strdup(state.token_buffer); // Save token
-                state.buf_idx = 0; // Reset buffer
-            }
+            handle_whitespace((char **)tokens, &state);
+            if (handle_special_chars(c, line[state.i + 1], tokens, &state))
+                state.i++;
         }
         else
         {
@@ -123,19 +132,16 @@ char    **tokenize_input(char *line)
         }
         state.i++;
     }
-    if (state.buf_idx > 0)
-    {
-        state.token_buffer[state.buf_idx] = '\0';
-        tokens[token_idx++] = strdup(state.token_buffer);
-    }
-    tokens[state.i] = NULL;
-
+    handle_whitespace((char **)tokens, &state);
+    tokens[state.i].value = NULL;
+    tokens[state.i].type = VOID;
+/*
     int j = 0;
     while (tokens[j] != NULL)
     {
         printf("Token %d: %s\n", j, tokens[j]);
         j++;
     } 
-
+*/
     return (tokens);
 }

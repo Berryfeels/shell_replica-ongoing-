@@ -1,5 +1,5 @@
 #include "../../include/minishell.h"
-
+/*
 int execute_command(char **av, bld_in *builtins)
 {
     bld_in  *builtin;
@@ -16,7 +16,7 @@ int execute_command(char **av, bld_in *builtins)
     }
     return (0);
 }
-
+*/
 bld_in  *find_builtin(bld_in *head, const char *command)
 {
     while (head != NULL)

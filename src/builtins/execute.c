@@ -2,10 +2,10 @@
 
 void    shell_loop(bld_in *builtins)
 {
-    char    *line;
-    char    **tokens;
-    bld_in  *bltin;
-    int     status;
+    char        *line;
+    t_token    *tokens;
+    bld_in      *bltin;
+    int         status;
 
     status = 1;
     while (status)
@@ -17,18 +17,16 @@ void    shell_loop(bld_in *builtins)
             add_history(line);
         tokens = tokenize_input(line);
         free (line);
-        if (!tokens || !tokens[0])
+        if (!tokens || !tokens[0].value)
         {
             free_tokens (tokens);
             continue ;
         }
-        bltin = find_builtin(builtins, tokens[0]);
+        bltin = find_builtin(builtins, tokens[0].value);
         if (bltin)
             g_msh.ret_exit = bltin->func(tokens);
         else
-        {
             g_msh.ret_exit = exec_external_cmd(tokens);
-        }
         free_tokens (tokens);
     }
 //    cleanup(builtins);
