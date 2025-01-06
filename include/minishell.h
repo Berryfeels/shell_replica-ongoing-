@@ -177,13 +177,13 @@ int		handle_unset(char **av);
 int		handle_exit(char **av);
 void    init_state(t_tokenizer *state);
 void    free_builtin_list(bld_in *head);
-void    free_tokens(char **tokens);
+void    free_tokens(t_token *tokens);
 char    *ms_get_env(char **env, char *av);
 void    ms_set_env(char **env, char *value);
 char	**ms_matrix_add_line(char **matrix, char *new_line);
 char    *ms_get_varenv(char **env, char *av);
 void    init_env(char **env);
-int		exec_external_cmd(char **tokens);
+int exec_external_cmd(t_token *tokens, t_job *job);
 int		ms_unset_env(char **env, char *var);
 
 #endif

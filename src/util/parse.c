@@ -70,14 +70,14 @@ void    handle_whitespace(char **tokens, t_tokenizer *state)
     }
 }
 
-void    free_tokens(char **tokens)
+void    free_tokens(t_token *tokens)
 {
     int i;
 
     i = 0;
-    while (tokens[i] != NULL)
+    while (tokens[i].value != NULL)
     {
-        free(tokens[i]);
+        free(tokens[i].value);
         i++;
     }
     free (tokens);
