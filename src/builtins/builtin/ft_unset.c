@@ -7,7 +7,7 @@ int    handle_unset(char **av)
         fprintf (stderr, "unset: missing argument\n");
         return (EXIT_FAILURE);
     }
-    if (unsetenv(av[1]) != 0)
+    if ((ms_unset_env(g_msh.env, av[1])) != 0)
     {
         perror ("unset");
         return (EXIT_FAILURE);

@@ -12,40 +12,40 @@
 
 #include "ft_dprintf.h"
 
-int	ft_dprint_char(char c, int *count)
+int	ft_dprint_char(char c, int fd, int *count)
 {
-	write(1, &c, 1);
-	return ((*count)++);
+    write(fd, &c, 1);
+    return ((*count)++);
 }
 
-int	ft_dprint_string(char *str, int *count)
+int	ft_dprint_string(char *str, int fd, int *count)
 {
-	if (!str)
-	{
-		str = "(null)";
-	}
-	while (*str)
-	{
-		ft_dprint_char(*str, count);
-		str++;
-	}
-	return (*count);
+    if (!str)
+    {
+        str = "(null)";
+    }
+    while (*str)
+    {
+        ft_dprint_char(*str, fd, count);
+        str++;
+    }
+    return (*count);
 }
 
-int	ft_dprint_hexa(unsigned long n, char specifier, int *count)
+int	ft_dprint_hexa(unsigned long n, char specifier, int fd, int *count)
 {
-	char	*symbols;
+    char	*symbols;
 
-	if (specifier == 'x')
-		symbols = "0123456789abcdef";
-	else if (specifier == 'X')
-		symbols = "0123456789ABCDEF";
-	if (n < 16)
-		ft_dprint_char(symbols[n], count);
-	else
-	{
-		ft_dprint_hexa(n / 16, specifier, count);
-		ft_dprint_hexa(n % 16, specifier, count);
-	}
-	return (*count);
+    if (specifier == 'x')
+        symbols = "0123456789abcdef";
+    else if (specifier == 'X')
+        symbols = "0123456789ABCDEF";
+    if (n < 16)
+        ft_dprint_char(symbols[n], fd, count);
+    else
+    {
+        ft_dprint_hexa(n / 16, specifier, fd, count);
+        ft_dprint_hexa(n % 16, specifier, fd, count);
+    }
+    return (*count);
 }

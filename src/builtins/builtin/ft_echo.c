@@ -33,7 +33,7 @@ int    handle_echo(char **av)
 	}
     while (av[i])
     {
-        printf ("%s", av[i]);
+    	printf ("%s", av[i]);
 		if (av[i + 1] != NULL)
 			printf(" ");
         i++;

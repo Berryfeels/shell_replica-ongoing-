@@ -23,13 +23,13 @@
 # include <fcntl.h>
 
 char	*ft_itoa(int n);
-int		ft_dprintf(const char *format, ...);
-int		ft_dprint_format(const char specifier, va_list ap, int *count);
-int		ft_dprint_unsigned(unsigned int n, int *count);
-int		ft_dprint_number(int n, int *count);
-int		ft_dprint_hexa(unsigned long n, char specifier, int *count);
-int		ft_dprint_string(char *str, int *count);
-int		ft_dprint_char(char c, int *count);
-int		ft_dprint_pointer(void *ptr, int *count);
+int     ft_dprintf(const char *format, ...);
+int		ft_dprint_format(const char specifier, va_list ap, int fd, int *count);
+int		ft_dprint_unsigned(unsigned int n, int fd, int *count);
+int		ft_dprint_number(int n, int fd, int *count);
+int		ft_dprint_hexa(unsigned long n, char specifier, int fd, int *count);
+int		ft_dprint_string(char *str, int fd, int *count);
+int		ft_dprint_char(char c, int fd, int *count);
+int		ft_dprint_pointer(void *ptr, int fd, int *count);
 
 #endif

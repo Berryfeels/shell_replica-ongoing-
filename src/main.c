@@ -12,25 +12,15 @@
 
 #include "../include/minishell.h"
 
-void ft_openErrorScan(void)
-{
-	int fd;
-	
-	fd = open ("ErrorScan.txt", O_RDWR, O_CREAT, 0777);
-	if (fd == -1)
-		close (fd);
-	exit (EXIT_ERROR);
-}
-
-
-
-int	main(int ac, char **env)
+int	main(int ac, char **argv, char **envp)
 {	
 	(void)ac;
+	(void)argv;
 	int	fd;
 	bld_in	*builtins;
 
-	init_env(env);
+
+	init_env(envp);
 	while ((fd = open("console", O_RDWR)) >= 0)
 	{
 		if (fd >= 3)
@@ -39,6 +29,7 @@ int	main(int ac, char **env)
 			break;
 		}
 	}
+	ft_dprintf("-------NEW LOG-------\n");
 	builtins = create_builtin_list();
 	shell_loop (builtins);
 

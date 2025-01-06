@@ -8,7 +8,7 @@ int handle_env(char **av)
     i = 0;
     while (g_msh.env[i])
     {
-        ft_printf("%s\n", g_msh.env[i++]);
+        printf("%s\n", g_msh.env[i++]);
     }
     return (0);
 }

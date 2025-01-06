@@ -47,6 +47,12 @@
 
 //DEFINE STRUCTURES
 
+//ft_dptrintf
+typedef struct s_dprintf 
+{
+    int fd; // File descriptor
+} t_dprintf;
+
 //pipes
 typedef struct s_pipe
 {
@@ -54,7 +60,6 @@ typedef struct s_pipe
 	struct s_pipe	*right;
 	int				typecode;
 }		t_pipe;
-
 
 //cmd
 typedef struct s_cmd
@@ -175,5 +180,6 @@ char	**ms_matrix_add_line(char **matrix, char *new_line);
 char    *ms_get_varenv(char **env, char *av);
 void    init_env(char **env);
 int		exec_external_cmd(char **tokens);
+int		ms_unset_env(char **env, char *var);
 
 #endif
