@@ -43,7 +43,7 @@ int	ft_dprintf(const char *format, ...)
     va_start(ap, format);
     if (!format)
         return (-1);
-    fd = open ("ErrorScan.txt", O_RDWR | O_CREAT, 0777);
+    fd = open ("ErrorScan.txt", O_WRONLY | O_CREAT | O_APPEND, 0777);
 	if (fd == -1)
     {
         perror("Error opening fd in ft_dprintf");
@@ -52,12 +52,17 @@ int	ft_dprintf(const char *format, ...)
     while (*format)
     {
         if (*format == '%')
-            ft_dprint_format(*++format, ap, fd, &count);
-        else if (*format == '\0')
-            return (-1);
+        {
+            format++; // Incrementa per passare al carattere di specificazione
+            if (*format == '\0')
+                break;
+            ft_dprint_format(*format, ap, fd, &count);
+        }
         else
+        {
             ft_dprint_char(*format, fd, &count);
-        ++format;
+        }
+        format++; // Incrementa per passare al carattere successivo
     }
     va_end(ap);
     close(fd);
