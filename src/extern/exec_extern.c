@@ -75,7 +75,7 @@ int exec_external_cmd(char **tokens)
     cmd_path = find_path(tokens[0], g_msh.env);
     if (!cmd_path)
     {
-        ft_printf("Command not found: %s\n", tokens[0]);
+        printf("Command not found: %s\n", tokens[0]);
         return -1;
     }
 
