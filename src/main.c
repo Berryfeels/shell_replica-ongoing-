@@ -31,6 +31,7 @@ int	main(int ac, char **argv, char **envp)
 	}
 	ft_dprintf("-------NEW LOG-------\n");
 	builtins = create_builtin_list();
+	ft_dprintf("Builtins created\n");
 	shell_loop (builtins);
 
 	free_builtin_list(builtins);

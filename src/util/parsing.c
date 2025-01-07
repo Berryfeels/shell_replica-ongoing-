@@ -45,6 +45,18 @@ int handle_special_chars(char c, char next, char **tokens, t_tokenizer *state)
         token_buffer[1] = '\0';
         tokens[state->i++] = ft_strdup(token_buffer);
     }
+    else if (c == '$' || (c == '$' && next == '?'))
+    {
+        token_buffer[0] = c;
+        if (next == '?')
+        {
+            token_buffer[1] = next;
+            token_buffer[2] = '\0';
+        }
+        else
+        token_buffer[1] = '\0';
+        tokens[state->i++] = ft_strdup(token_buffer);
+    }
     return (0);
 }
 

@@ -1,4 +1,4 @@
-#include "../../include/minishell.h"
+#include "../include/minishell.h"
 
 void    shell_loop(bld_in *builtins)
 {
@@ -10,6 +10,7 @@ void    shell_loop(bld_in *builtins)
     status = 1;
     while (status)
     {
+        ft_dprintf("shell_loop\n");
         line = readline("Mestepum> ");
         if (!line)
             break ;
@@ -22,6 +23,8 @@ void    shell_loop(bld_in *builtins)
             free_tokens (tokens);
             continue ;
         }
+        //expansion
+        //redirection
         bltin = find_builtin(builtins, tokens[0]);
         if (bltin)
             g_msh.ret_exit = bltin->func(tokens);
