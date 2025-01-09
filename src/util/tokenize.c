@@ -83,19 +83,19 @@ void    free_tokens(char **tokens)
     free (tokens);
 }
 
-char    *read_input(void)
-{
-    char    *line;
+// char    *read_input(void)
+// {
+//     char    *line;
 
-    line = readline ("Mestepum> ");
-    if (line && *line)
-    {
-        add_history (line);
-        return (line);
-    }
-    free (line);
-    return (NULL);
-}
+//     line = readline ("Mestepum> ");
+//     if (line && *line)
+//     {
+//         add_history (line);
+//         return (line);
+//     }
+//     free (line);
+//     return (NULL);
+// }
 
 char    **tokenize_input(char *line)
 {

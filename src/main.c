@@ -19,7 +19,6 @@ int	main(int ac, char **argv, char **envp)
 	int	fd;
 	bld_in	*builtins;
 
-
 	init_env(envp);
 	while ((fd = open("console", O_RDWR)) >= 0)
 	{
@@ -31,11 +30,8 @@ int	main(int ac, char **argv, char **envp)
 	}
 	ft_dprintf("-------NEW LOG-------\n");
 	builtins = create_builtin_list();
-	ft_dprintf("Builtins created\n");
 	shell_loop (builtins);
-
 	free_builtin_list(builtins);
-
 	close (fd);
 	return 0;
 }

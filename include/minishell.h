@@ -109,13 +109,13 @@ typedef struct s_token
 typedef struct s_msh
 {
 	char	**env;
-	char	**env_export;
-	int		ret_exit;
-	int		switch_signal;
-	char	*user;
+	char	**env_export; //copy fot changings
+	int		ret_exit; // return exit status
+	int		switch_signal; // child_process
+	char	*user; // user name + path eventually
 }				t_msh;
 
-typedef enum e_type
+typedef enum e_type 
 {
 	VOID,
 	PIPE,
@@ -144,9 +144,9 @@ typedef struct bld_in {
 
 typedef struct	s_tokenizer {
 	char	token_buffer[MAX_BUFFER];
-	int		buf_idx;
-	int		i;
-	t_state	cur_state;
+	int		buf_idx; // tokens index
+	int		i; // to iterate through everything
+	t_state	cur_state; // current state, linked list showing all the tokens
 } t_tokenizer;
 
 typedef struct s_job {
