@@ -12,6 +12,7 @@
 
 #include "../include/minishell.h"
 
+/*
 int	main(int ac, char **argv, char **envp)
 {	
 	(void)ac;
@@ -37,4 +38,36 @@ int	main(int ac, char **argv, char **envp)
 
 	close (fd);
 	return 0;
+}
+*/
+
+int main(void)
+{
+    char *line;
+    t_token *tokens;
+
+    while (1)
+    {
+        // Prompt for user input
+        line = readline("Mestepum> ");
+        if (!line || strcmp(line, "exit") == 0)
+        {
+            free(line);
+            break;
+        }
+
+        // Tokenize the input
+        tokens = tokenize_input(line);
+        free(line);
+
+        // Print the tokens
+        for (int i = 0; tokens[i].value != NULL; i++)
+        {
+            printf("Token %d: %s (Type: %d)\n", i, tokens[i].value, tokens[i].type);
+        }
+
+        free_tokens(tokens);
+    }
+
+    return 0;
 }

@@ -1,5 +1,5 @@
 #include "../../include/minishell.h"
-
+/*
 void    shell_loop(bld_in *builtins)
 {
     char        *line;
@@ -26,8 +26,9 @@ void    shell_loop(bld_in *builtins)
         if (bltin)
             g_msh.ret_exit = bltin->func(tokens);
         else
-            g_msh.ret_exit = exec_external_cmd(tokens);
+            g_msh.ret_exit = exec_external_cmd(tokens, job);
         free_tokens (tokens);
     }
 //    cleanup(builtins);
 }
+*/

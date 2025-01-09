@@ -123,6 +123,7 @@ typedef enum e_type
 	HERE_DOC_L,
 	APPEND,
 	STATE,
+	FILE_T
 }				t_type;
 
 typedef enum e_state
@@ -150,6 +151,7 @@ typedef struct	s_tokenizer {
 	char	token_buffer[MAX_BUFFER];
 	int		buf_idx;
 	int		i;
+	const char	*line;
 	t_state	cur_state;
 } t_tokenizer;
 
@@ -163,9 +165,9 @@ typedef struct s_job {
 t_msh	g_msh;
 
 //funtions
-void	shell_loop(bld_in *builtins);
-char	*read_input(void);
-t_token    *tokenize_input(char *line);
+//void	shell_loop(bld_in *builtins);
+//char	*read_input(void);
+t_token *tokenize_input(const char *line);
 bld_in	*create_builtin_list(void);
 bld_in 	*find_builtin(bld_in *head, const char *command);
 int		handle_cd(char **av);
