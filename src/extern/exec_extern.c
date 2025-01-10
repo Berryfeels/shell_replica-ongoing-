@@ -63,32 +63,39 @@ char	*find_path(char *cmd, char **envp)
 	return (0);
 }
 
-int exec_external_cmd(char **tokens)
+int exec_external_cmd(t_token *tokens, t_job *job)
 {
-    pid_t pid;
-    int status;
-    char *cmd_path;
+    char	*cmd_path;
+	int		i;
 
-    if (!tokens || !tokens[0])
+    if (!tokens || !tokens[0].value)
         return -1;
 
-    cmd_path = find_path(tokens[0], g_msh.env);
+    cmd_path = find_path(tokens[0].value, g_msh.env);
     if (!cmd_path)
     {
-        printf("Command not found: %s\n", tokens[0]);
+        ft_printf("Command not found: %s\n", tokens[0].value);
         return -1;
     }
 
-    pid = fork();
-    if (pid == -1)
+    job->pid = fork();
+	
+    if (job->pid == -1)
     {
         perror("fork");
         free(cmd_path);
         return -1;
     }
-    else if (pid == 0)
+    else if (job->pid == 0)
     {
-        if (execve(cmd_path, tokens, g_msh.env) == -1)
+		i = 0;
+		char	*av[i + 1];
+        while (tokens[i].value != NULL)
+		{
+			av[i] = tokens[i].value;
+			i++;
+		}
+		if (execve(cmd_path, av, g_msh.env) == -1)
         {
             perror("execve");
             free(cmd_path);
@@ -97,8 +104,11 @@ int exec_external_cmd(char **tokens)
     }
     else
     {
-        waitpid(pid, &status, 0);
+		job->status = 1;
+		job->command = strdup(tokens[0].value);
+        waitpid(job->pid, &job->status, 0);
         free(cmd_path);
+		job->status = 0;
     }
 
     return 0;

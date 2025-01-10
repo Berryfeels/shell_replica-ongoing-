@@ -15,6 +15,7 @@
 
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <signal.h>
 # include <fcntl.h>
 # include <unistd.h>
 # include "../lib/dprintf/ft_dprintf.h"
@@ -23,6 +24,7 @@
 # include <sys/wait.h>
 # include <string.h>
 # include <stdbool.h>
+# include <readline/readline.h>
 # include "../lib/libft/libft.h"
 # include "../lib/printf/ft_printf.h"
 
@@ -99,23 +101,21 @@ typedef struct s_redir
 
 //token struct
 
-typedef struct s_token
-{
-	char token;
-} t_token;
+
 
 //me11
-
+//general struc for the whole shell that is carring the necessary info
 typedef struct s_msh
 {
 	char	**env;
-	char	**env_export; //copy fot changings
-	int		ret_exit; // return exit status
-	int		switch_signal; // child_process
-	char	*user; // user name + path eventually
+	char	**env_export;
+	int		ret_exit;
+	int		switch_signal;
+	char	*user;
 }				t_msh;
 
-typedef enum e_type 
+//e
+typedef enum e_type
 {
 	VOID,
 	PIPE,
@@ -125,6 +125,7 @@ typedef enum e_type
 	HERE_DOC_L,
 	APPEND,
 	STATE,
+	FILE_T
 }				t_type;
 
 typedef enum e_state
@@ -136,6 +137,12 @@ typedef enum e_state
 	LOSE_IT,
 }				t_state;
 
+typedef struct s_token
+{
+	char *value;
+	t_type	type;
+} t_token;
+
 typedef struct bld_in {
 	char	*name;
 	int		(*func)(char **ac);
@@ -144,9 +151,10 @@ typedef struct bld_in {
 
 typedef struct	s_tokenizer {
 	char	token_buffer[MAX_BUFFER];
-	int		buf_idx; // tokens index
-	int		i; // to iterate through everything
-	t_state	cur_state; // current state, linked list showing all the tokens
+	int		buf_idx;
+	int		i;
+	const char	*line;
+	t_state	cur_state;
 } t_tokenizer;
 
 typedef struct s_job {
@@ -159,11 +167,12 @@ typedef struct s_job {
 t_msh	g_msh;
 
 //funtions
-void	shell_loop(bld_in *builtins);
-char	*read_input(void);
-char	**tokenize_input(char *line);
+//void	shell_loop(bld_in *builtins);
+//char	*read_input(void);
+t_token *tokenize_input(const char *line);
 bld_in	*create_builtin_list(void);
 bld_in 	*find_builtin(bld_in *head, const char *command);
+char	*read_input(void);
 int		handle_cd(char **av);
 int		handle_echo(char **av);
 int		handle_env(char **av);
@@ -173,13 +182,14 @@ int		handle_unset(char **av);
 int		handle_exit(char **av);
 void    init_state(t_tokenizer *state);
 void    free_builtin_list(bld_in *head);
-void    free_tokens(char **tokens);
+void    free_tokens(t_token *tokens);
 char    *ms_get_env(char **env, char *av);
 void    ms_set_env(char **env, char *value);
 char	**ms_matrix_add_line(char **matrix, char *new_line);
 char    *ms_get_varenv(char **env, char *av);
 void    init_env(char **env);
-int		exec_external_cmd(char **tokens);
+int		exec_external_cmd(t_token *tokens, t_job *job);
 int		ms_unset_env(char **env, char *var);
+void	signal_handler(void);
 
 #endif

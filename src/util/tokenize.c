@@ -1,86 +1,139 @@
 #include "../../include/minishell.h"
 
-void handle_quotes(char c, t_tokenizer *state)
+static int add_token(t_token *tokens, int *token_count, char *value, t_type type)
 {
-    if (state->cur_state == TEXT)
+	if (*token_count >= MAX_TOKENS - 1)
+	{
+		fprintf(stderr, "Error: Too many tokens\n");
+		return (-1);
+	}
+
+	// Allocate and copy the token
+	tokens[*token_count].value = strdup(value);
+	tokens[*token_count].type = type;
+	(*token_count)++;
+	return (0);
+}
+
+/**
+ * Finalize the current token in the buffer.
+ */
+static int finalize_token(t_tokenizer *state, t_token *tokens, int *token_count, t_type type)
+{
+	if (state->buf_idx > 0)
+	{
+		state->token_buffer[state->buf_idx] = '\0'; // Null-terminate the token
+		if (add_token(tokens, token_count, state->token_buffer, type) == -1)
+			return (-1);
+		state->buf_idx = 0; // Reset the buffer index
+	}
+	return (0);
+}
+
+void handle_variable(char c, t_tokenizer *state)
+{
+    char temp[MAX_BUFFER];
+    int var_len;
+    char *var_value;
+
+    var_len = 0;
+    // If $ is inside single quotes, treat it as literal
+    if (state->cur_state == S_QUOTE)
     {
-        if (c == '\'')
-            state->cur_state = S_QUOTE; // Enter single-quote mode
-        else if (c == '\"')
-            state->cur_state = D_QUOTE; // Enter double-quote mode
-        else
-            state->token_buffer[state->buf_idx++] = c; // Append non-quote chars
+        state->token_buffer[state->buf_idx++] = c;
+        return;
     }
-    else if (state->cur_state == S_QUOTE)
+
+    // Collect the variable name
+    state->i++; // Skip the $
+    while (ft_isalnum(state->line[state->i]) || state->line[state->i] == '_')
     {
-        if (c == '\'')
-            state->cur_state = TEXT; // Exit single-quote mode
-        else
-            state->token_buffer[state->buf_idx++] = c; // Append inside single quotes
+        temp[var_len++] = state->line[state->i];
+        state->i++;
     }
-    else if (state->cur_state == D_QUOTE)
+    state->i--; // Rewind one step since we read past the variable
+
+    temp[var_len] = '\0'; // Null-terminate variable name
+
+    // Lookup the variable value from the environment
+    var_value = getenv(temp); // Or use your custom environment function
+    if (var_value)
     {
-        if (c == '\"')
-            state->cur_state = TEXT; // Exit double-quote mode
-        else
-            state->token_buffer[state->buf_idx++] = c; // Append inside double quotes
+        while (*var_value)
+            state->token_buffer[state->buf_idx++] = *var_value++;
     }
 }
 
-int handle_special_chars(char c, char next, char **tokens, t_tokenizer *state)
+void handle_s_quote(char c, t_tokenizer *state)
 {
-    char token_buffer[3] = {0};
+    if (c == '\'') // Exit single-quote mode
+    {
+        state->cur_state = TEXT;
+    }
+    else
+    {
+        // Add character literally to the buffer
+        state->token_buffer[state->buf_idx++] = c;
+    }
+}
 
+void handle_d_quote(char c, const char *line, t_tokenizer *state)
+{
+    if (c == '\"') // Exit double-quote mode
+    {
+        state->cur_state = TEXT;
+    }
+    else if (c == '\\') // Handle escaped characters
+    {
+        state->i++; // Move to the next character
+        if (line[state->i] != '\0') // Prevent buffer overrun
+        {
+            state->token_buffer[state->buf_idx++] = line[state->i];
+        }
+    }
+    else if (c == '$') // Handle variable expansion
+    {
+        // Add custom logic for expanding variables (e.g., $HOME)
+        handle_variable(c, state); // You can skip tokens here
+    }
+    else
+    {
+        // Add literal character to the buffer
+        state->token_buffer[state->buf_idx++] = c;
+    }
+}
+
+int handle_special_chars(char c, char next, t_tokenizer *state, t_token *tokens, int *token_count)
+{
+    char temp[3] = {c, '\0', '\0'};
+
+    // Handle << and >>
     if ((c == '<' && next == '<') || (c == '>' && next == '>'))
     {
-        token_buffer[0] = c;
-        token_buffer[1] = next;
-        token_buffer[2] = '\0';
-        tokens[state->i++] = ft_strdup(token_buffer);
-        return (1);
+        temp[1] = next; // Add second character
+        finalize_token(state, tokens, token_count, STRING); // Finish the current token
+        add_token(tokens, token_count, temp, (c == '<') ? HERE_DOC_L : APPEND);
+        state->i++; // Skip the next character
+        return 1;
     }
-    else if (c == '|' || c == '<' || c == '>')
+
+    // Handle single special characters
+    if (c == '<' || c == '>' || c == '|')
     {
-        token_buffer[0] = c;
-        token_buffer[1] = '\0';
-        tokens[state->i++] = ft_strdup(token_buffer);
+        finalize_token(state, tokens, token_count, STRING); // Finish the current token
+        add_token(tokens, token_count, temp, (c == '|') ? PIPE : (c == '<') ? REDIR_L : REDIR_R);
+        return 1;
     }
-    else if (c == '$' || (c == '$' && next == '?'))
-    {
-        token_buffer[0] = c;
-        if (next == '?')
-        {
-            token_buffer[1] = next;
-            token_buffer[2] = '\0';
-        }
-        else
-        token_buffer[1] = '\0';
-        tokens[state->i++] = ft_strdup(token_buffer);
-    }
-    return (0);
+
+    return 0; // Not a special character
 }
 
-void    handle_whitespace(char **tokens, t_tokenizer *state)
+void handle_whitespace(t_tokenizer *state, t_token *tokens, int *token_count)
 {
-    if (state->buf_idx > 0)
+    if (state->buf_idx > 0) // If there is something in the buffer
     {
-        state->token_buffer[state->buf_idx] = '\0';
-        tokens[state->i++] = strdup(state->token_buffer);
-        state->buf_idx = 0;
+        finalize_token(state, tokens, token_count, STRING);
     }
-}
-
-void    free_tokens(char **tokens)
-{
-    int i;
-
-    i = 0;
-    while (tokens[i] != NULL)
-    {
-        free(tokens[i]);
-        i++;
-    }
-    free (tokens);
 }
 
 // char    *read_input(void)
@@ -97,57 +150,93 @@ void    free_tokens(char **tokens)
 //     return (NULL);
 // }
 
-char    **tokenize_input(char *line)
+void process_token_types(t_token *tokens)
 {
-    char            **tokens;
-    t_tokenizer     state;
-    char            c;
-    int             token_idx;
+    t_token *prev_token = NULL;
 
-    token_idx = 0;
-    if (ft_strlen(line) >= MAX_BUFFER)
+    for (int i = 0; tokens[i].value != NULL; i++)
     {
-        fprintf(stderr, "Error: Input too long\n");
-        return NULL;
+        if (prev_token &&
+            (prev_token->type == REDIR_L || prev_token->type == REDIR_R ||
+             prev_token->type == APPEND || prev_token->type == HERE_DOC_L))
+        {
+            tokens[i].type = FILE_T; // Assign FILE type to the current token
+        }
+
+        prev_token = &tokens[i]; // Update the previous token
     }
-    tokens = ft_calloc(MAX_TOKENS, sizeof(char *));
+}
+
+t_token *tokenize_input(const char *line)
+{
+    t_tokenizer state;
+    t_token *tokens;
+    char c;
+    int token_count = 0;
+
+    tokens = calloc(MAX_TOKENS, sizeof(t_token));
     if (!tokens)
     {
-        perror("calloc failed\n");
+        perror("calloc failed");
         return NULL;
     }
-    init_state (&state);
-    while (line[state.i] != '\0')
+
+    memset(&state, 0, sizeof(t_tokenizer));
+    state.cur_state = TEXT;
+
+    while ((c = line[state.i]) != '\0')
     {
-        c = line[state.i];
-        if (isspace(c) && state.cur_state == TEXT)
+        if (state.cur_state == S_QUOTE)
         {
-            if (state.buf_idx > 0) // Finish current token
-            {
-                state.token_buffer[state.buf_idx] = '\0'; // Null-terminate
-                tokens[token_idx++] = strdup(state.token_buffer); // Save token
-                state.buf_idx = 0; // Reset buffer
-            }
+            handle_s_quote(c, &state);
+        }
+        else if (state.cur_state == D_QUOTE)
+        {
+            handle_d_quote(c, line, &state);
+        }
+        else if (isspace(c))
+        {
+            handle_whitespace(&state, tokens, &token_count);
+        }
+        else if (c == '\'')
+        {
+            state.cur_state = S_QUOTE;
+        }
+        else if (c == '\"')
+        {
+            state.cur_state = D_QUOTE;
+        }
+        else if (handle_special_chars(c, line[state.i + 1], &state, tokens, &token_count))
+        {
+            // Special character handled
+        }
+        else if (c == '\\' && line[state.i + 1] == '\n')
+        {
+            state.i++;
         }
         else
         {
-            handle_quotes(c, &state);
+            state.token_buffer[state.buf_idx++] = c;
         }
+        
         state.i++;
     }
-    if (state.buf_idx > 0)
+
+    finalize_token(&state, tokens, &token_count, STRING);
+
+    tokens[token_count].value = NULL;
+    tokens[token_count].type = VOID;
+
+    process_token_types(tokens);
+
+    return tokens;
+}
+
+void free_tokens(t_token *tokens)
+{
+    for (int i = 0; tokens[i].value != NULL; i++)
     {
-        state.token_buffer[state.buf_idx] = '\0';
-        tokens[token_idx++] = strdup(state.token_buffer);
+        free(tokens[i].value);
     }
-    tokens[state.i] = NULL;
-
-    int j = 0;
-    while (tokens[j] != NULL)
-    {
-        printf("Token %d: %s\n", j, tokens[j]);
-        j++;
-    } 
-
-    return (tokens);
+    free(tokens);
 }

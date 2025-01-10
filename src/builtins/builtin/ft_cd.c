@@ -39,3 +39,40 @@ int    handle_cd(char **av)
     set_pwd("PWD=", cwd);
     return (0);
 }
+
+char *read_input(void)
+{
+    char cwd[1024];
+    if (getcwd(cwd, sizeof(cwd)) != NULL)
+    {
+        char prompt[1064];
+        int i = 0;
+        while (cwd[i] != '\0')
+        {
+            prompt[i] = cwd[i];
+            i++;
+        }
+        prompt[i++] = ' ';
+        prompt[i++] = 'M';
+        prompt[i++] = 'e';
+        prompt[i++] = 's';
+        prompt[i++] = 't';
+        prompt[i++] = 'e';
+        prompt[i++] = 'p';
+        prompt[i++] = 'u';
+        prompt[i++] = 'm';
+        prompt[i++] = '>';
+        prompt[i++] = ' ';
+        prompt[i] = '\0';
+
+        char *line = readline(prompt);
+        if (line && *line)
+            add_history(line);
+        return line;
+    }
+    else
+    {
+        perror("getcwd() error");
+        return NULL;
+    }
+}
