@@ -2,6 +2,7 @@
 	"files.associations": {
 		"ft_printf.h": "c",
 		"ft_dprintf.h": "c",
-		"stdarg.h": "c"
+		"stdarg.h": "c",
+		"minishell.h": "c"
 	}
 }

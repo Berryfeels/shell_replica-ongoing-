@@ -15,15 +15,18 @@
 
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <signal.h>
 # include <fcntl.h>
 # include <unistd.h>
-# include "../dprintf/ft_dprintf.h"
+# include "../lib/dprintf/ft_dprintf.h"
 # include <stdlib.h>
 # include <stdio.h>
 # include <sys/wait.h>
 # include <string.h>
-# include "../libft/libft.h"
-# include "../printf/ft_printf.h"
+# include <stdbool.h>
+# include <readline/readline.h>
+# include "../lib/libft/libft.h"
+# include "../lib/printf/ft_printf.h"
 
 
 /******************************************************************************
@@ -33,14 +36,24 @@
 # define EXIT_ERROR 1
 # define EXIT_SUCCESS 0
 # define PATH_MAX 4096
+# define MAX_TOKENS 128
+# define MAX_BUFFER 1024
 
 /******************************************************************************
 *								TOKENS										  *
 ******************************************************************************/
 //give a definition to the different tokens
-# define PIPE '|'
+//# define PIPE '|'
+# define WHITESPACE "\t\n\v\f\r "
+# define REDIRECTION "|<>"
 
 //DEFINE STRUCTURES
+
+//ft_dptrintf
+typedef struct s_dprintf 
+{
+    int fd; // File descriptor
+} t_dprintf;
 
 //pipes
 typedef struct s_pipe
@@ -49,7 +62,6 @@ typedef struct s_pipe
 	struct s_pipe	*right;
 	int				typecode;
 }		t_pipe;
-
 
 //cmd
 typedef struct s_cmd
@@ -89,14 +101,97 @@ typedef struct s_redir
 
 //token struct
 
+
+
+//me11
+//general struc for the whole shell that is carring the necessary info
+typedef struct s_msh
+{
+	char	**env;
+	char	**env_export;
+	int		ret_exit;
+	int		switch_signal;
+	char	*user;
+}				t_msh;
+
+//e
+typedef enum e_type
+{
+	VOID,
+	PIPE,
+	STRING,
+	REDIR_L,
+	REDIR_R,
+	HERE_DOC_L,
+	APPEND,
+	STATE,
+	FILE_T
+}				t_type;
+
+typedef enum e_state
+{
+	TEXT,
+	S_QUOTE,
+	D_QUOTE,
+	KEEP_IT,
+	LOSE_IT,
+}				t_state;
+
 typedef struct s_token
 {
-	char token;
+	char *value;
+	t_type	type;
 } t_token;
 
+typedef struct bld_in {
+	char	*name;
+	int		(*func)(char **ac);
+	struct bld_in *next;
+} bld_in;
+
+typedef struct	s_tokenizer {
+	char	token_buffer[MAX_BUFFER];
+	int		buf_idx;
+	int		i;
+	const char	*line;
+	t_state	cur_state;
+} t_tokenizer;
+
+typedef struct s_job {
+    pid_t	pid;        // Process ID of the job
+    int		status;       // Job status (running, stopped, etc.)
+    char	*command;    // The command being executed
+    struct	s_job *next; // Linked list for multiple jobs
+}		t_job;
+
+t_msh	g_msh;
+
 //funtions
-int	execute(char *cmd, char **envp);
-void ft_pwd ();
-void ft_cd(char *buff, char *prompt);
+//void	shell_loop(bld_in *builtins);
+//char	*read_input(void);
+t_token *tokenize_input(const char *line);
+bld_in	*create_builtin_list(void);
+bld_in 	*find_builtin(bld_in *head, const char *command);
+int		handle_cd(char **av);
+int		handle_echo(char **av);
+int		handle_env(char **av);
+int		handle_pwd(char **av);
+int		handle_export(char **av);
+int		handle_unset(char **av);
+int		handle_exit(char **av);
+void    init_state(t_tokenizer *state);
+void    free_builtin_list(bld_in *head);
+void    free_tokens(t_token *tokens);
+char    *ms_get_env(char **env, char *av);
+void    ms_set_env(char **env, char *value);
+char	**ms_matrix_add_line(char **matrix, char *new_line);
+char    *ms_get_varenv(char **env, char *av);
+void    init_env(char **env);
+int		exec_external_cmd(t_token *tokens, t_job *job);
+int		ms_unset_env(char **env, char *var);
+void	signal_handler(void);
+void	initialize_error_log(void);
+char	*read_input(void);
+void	control_log (t_token *tokens);
 
 #endif

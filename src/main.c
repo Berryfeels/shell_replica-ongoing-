@@ -12,54 +12,31 @@
 
 #include "../include/minishell.h"
 
-void ft_openErrorScan(void)
+int main(void)
 {
-	int fd;
-	
-	fd = open ("ErrorScan.txt", O_RDWR, O_CREAT, 0777);
-	if (fd == -1)
-		close (fd);
-	exit (EXIT_ERROR);
-}
+    char *line;
+    t_token *tokens;
 
+	signal_handler();
+    initialize_error_log();
+    while (1)
+    {
+        // Prompt for user input
+        line = read_input();
+        if (!line || strcmp(line, "exit") == 0 || line == NULL)
+        {
+            //check test for ctrl d
+            if (line == NULL)
+                printf("exit ctrl d\n");
+            free(line);
+            break;
+        }
+        // Tokenize the input
+        tokens = tokenize_input(line);
+        free(line);
+        control_log(tokens);
+        free_tokens(tokens);
+    }
 
-
-int	main()
-{	
-	int	fd;
-	char *prompt;
-	char *buff;
-
-	buff = NULL;
-	while ((fd = open("console", O_RDWR)) >= 0)
-	{
-		if (fd >= 3)
-		{
-			close(fd);
-			break;
-		}
-	}
-	while (1)
-	{	
-		prompt = readline("Mestepum> ");
-		if (prompt)
-		{
-			if(*prompt)
-			{
-				add_history(prompt);
-				if (prompt[0] == 'c' && prompt[1] == 'd' && prompt[2] == ' ')
-					ft_cd(buff, prompt);
-				if (prompt[0] == 'p' && prompt[1] == 'w' && prompt[2] == 'd')
-					ft_pwd();
-				if (strncmp(prompt, "exit", 4) == 0)//place holder
-					return 0;
-				free (prompt);
-			}
-		}
-		else 
-			break;
-		
-	}
-	close (fd);
-	return 0;
+    return 0;
 }
