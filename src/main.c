@@ -18,6 +18,7 @@ int main(void)
     t_token *tokens;
 
 	signal_handler();
+    initialize_error_log();
     while (1)
     {
         // Prompt for user input
@@ -33,13 +34,7 @@ int main(void)
         // Tokenize the input
         tokens = tokenize_input(line);
         free(line);
-
-        // Print the tokens
-        for (int i = 0; tokens[i].value != NULL; i++)
-        {
-            printf("Token %d: %s (Type: %d)\n", i, tokens[i].value, tokens[i].type);
-        }
-
+        control_log(tokens);
         free_tokens(tokens);
     }
 

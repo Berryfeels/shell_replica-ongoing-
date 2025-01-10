@@ -1,38 +1,15 @@
--------NEW LOG-------
-passed set_up, write line
-line is: (null)
--------NEW LOG-------
-passed set_up, write line
-parser inizio
-parser
--------NEW LOG-------
-shell_loop
-shell_loop
-shell_loop
-shell_loop
--------NEW LOG-------
-shell_loop
-shell_loop
-shell_loop
--------NEW LOG-------
-shell_loop
-shell_loop
-shell_loop
--------NEW LOG-------
-shell_loop
--------NEW LOG-------
-shell_loop
--------NEW LOG-------
-shell_loop
-shell_loop
--------NEW LOG-------
-shell_loop
--------NEW LOG-------
-shell_loop
-
-
--------NEW LOG-------
-shell_loop
-shell_loop
--------NEW LOG-------
-shell_loop
+Token 6: out (Type: 8)
+8)
+Token 0: cd (Type: 2)
+Token 0: < (Type: 3)
+Token 1: out (Type: 8)
+Token 2: | (Type: 1)
+Token 3: grep (Type: 2)
+Token 4: a (Type: 2)
+Token 5: | (Type: 1)
+Token 6: wc (Type: 2)
+Token 7: -l (Type: 2)
+Token 8: > (Type: 4)
+Token 9: out (Type: 8)
+Token 0: cd (Type: 2)
+Token 0: EXIT (Type: 2)

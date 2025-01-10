@@ -172,7 +172,6 @@ t_msh	g_msh;
 t_token *tokenize_input(const char *line);
 bld_in	*create_builtin_list(void);
 bld_in 	*find_builtin(bld_in *head, const char *command);
-char	*read_input(void);
 int		handle_cd(char **av);
 int		handle_echo(char **av);
 int		handle_env(char **av);
@@ -191,5 +190,8 @@ void    init_env(char **env);
 int		exec_external_cmd(t_token *tokens, t_job *job);
 int		ms_unset_env(char **env, char *var);
 void	signal_handler(void);
+void	initialize_error_log(void);
+char	*read_input(void);
+void	control_log (t_token *tokens);
 
 #endif
