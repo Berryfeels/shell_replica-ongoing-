@@ -3,63 +3,82 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stdi-pum <stdi-pum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jslusark <jslusark@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/29 17:01:45 by stdi-pum          #+#    #+#             */
-/*   Updated: 2024/10/04 15:33:26 by stdi-pum         ###   ########.fr       */
+/*   Created: 2024/10/30 16:26:03 by jslusark          #+#    #+#             */
+/*   Updated: 2025/02/21 18:11:38 by jslusark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void ft_openErrorScan(void)
+int	g_sig;
+
+t_node_list	*parse(char *input, t_node_list *nodes, t_msh *msh)
 {
-	int fd;
-	
-	fd = open ("ErrorScan.txt", O_RDWR, O_CREAT, 0777);
-	if (fd == -1)
-		close (fd);
-	exit (EXIT_ERROR);
+	t_tokens	*tokens;
+
+	tokens = return_tokens(input, msh);
+	free(input);
+	if (!tokens)
+	{
+		msh->prev_exit = msh->exit_code;
+		nodes = NULL;
+	}
+	else
+	{
+		nodes = return_nodes(tokens, msh);
+		if (!nodes)
+			msh->prev_exit = msh->exit_code;
+	}
+	if (tokens)
+		free_tokens(tokens);
+	return (nodes);
 }
 
-
-
-int	main()
-{	
-	int	fd;
-	char *prompt;
-	char *buff;
-
-	buff = NULL;
-	while ((fd = open("console", O_RDWR)) >= 0)
+void	handle_input(char *input, t_node_list *nodes, t_msh *msh)
+{
+	if (g_sig == SIGINT)
 	{
-		if (fd >= 3)
-		{
-			close(fd);
-			break;
-		}
+		msh->prev_exit = 130;
+		g_sig = 0;
 	}
+	if (g_sig == SIGQUIT)
+	{
+		msh->prev_exit = 131;
+		g_sig = 0;
+	}
+	if (input && *input)
+		add_history(input);
+	nodes = parse(input, nodes, msh);
+	if (nodes)
+	{
+		exec_node_list(nodes);
+	}
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	char			*input;
+	t_node_list		*nodes;
+	t_msh			*msh;
+
+	(void)argc;
+	(void)argv;
+	ms_env_init(&msh, envp);
+	store_home(msh->ms_env, msh);
+	nodes = NULL;
 	while (1)
-	{	
-		prompt = readline("Mestepum> ");
-		if (prompt)
-		{
-			if(*prompt)
-			{
-				add_history(prompt);
-				if (prompt[0] == 'c' && prompt[1] == 'd' && prompt[2] == ' ')
-					ft_cd(buff, prompt);
-				if (prompt[0] == 'p' && prompt[1] == 'w' && prompt[2] == 'd')
-					ft_pwd();
-				if (strncmp(prompt, "exit", 4) == 0)//place holder
-					return 0;
-				free (prompt);
-			}
-		}
-		else 
-			break;
-		
+	{
+		run_signals(1, msh);
+		input = readline(COLOR_GREEN "Minishell> " COLOR_RESET);
+		if (!input)
+			handle_eof(msh);
+		else
+			handle_input(input, nodes, msh);
+		msh->prev_exit = msh->exit_code;
 	}
-	close (fd);
-	return 0;
+	free_msh(msh);
+	rl_clear_history();
+	return (0);
 }
